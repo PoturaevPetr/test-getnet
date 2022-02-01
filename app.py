@@ -93,12 +93,13 @@ def login():
             response_object['message'] = "Неверные логин или пароль"
     return jsonify(response_object)
 
+### какая то лажа
 @login_manager.user_loader
 def getUser(id_user):
-    print('dfvsfb')
     return UserLogin().initDB(id_user, User)
 
 @app.route('/user', methods=['GET'])
+#@login_required
 def initUser():
     response_object = {"status": "susses"}
     user = UserLogin
@@ -107,6 +108,7 @@ def initUser():
     return jsonify(response_object)
 
 @app.route('/history', methods=['GET'])
+#@login_required
 def getHistory():
     response_object = {"status": "susses"}
     data = History.query.all()
@@ -125,6 +127,7 @@ def getHistory():
     return jsonify(response_object)
 
 @app.route('/payments', methods=['GET', 'POST'])
+#@login_required
 def getPayments():
     response_object = {"status": "susses"}
     if request.method == 'POST':
@@ -167,6 +170,7 @@ def getPayments():
     return jsonify(response_object)
 
 @app.route('/services', methods=['GET', 'POST'])
+#@login_required
 def getServices():
     response_object = {"status": "susses"}
     if request.method == 'POST':
@@ -202,8 +206,9 @@ def getServices():
 
     return jsonify(response_object)
 
-#дописать
+#дописать для send PDF
 @app.route('/sendDetails', methods=['GET', 'POST'])
+#@login_required
 def sendEmail():
     response_object = {'status': 'susses'}
     if request.method == 'POST':
