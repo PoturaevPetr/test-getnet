@@ -3,7 +3,7 @@
 		<nav class="navbar">
 			<h3>Личный кабинет</h3>
 			<div class="links">
-				<button type="button" class="btn btn-danger" @click="Exit">Выйти</button>
+				<button type="button" class="btn btn-danger">Выйти</button>
 			</div>
 		</nav>
 		<div class="container">

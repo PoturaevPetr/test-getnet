@@ -9,7 +9,7 @@ class User(db.Model):
     login = db.Column(db.String(200), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     date = db.Column(db.String(200), nullable=False)
-    balance = db.Column(db.Integer, nullable=False)
+    balance = db.Column(db.Float, nullable=False)
     password = db.Column(db.String(255), nullable=False)
 
     def __init__(self, name, login, email, date, balance, password):

@@ -1,14 +1,13 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from datetime import datetime
-from flask_login import LoginManager, login_user, login_required
-#from cache import *
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from UserLogin import UserLogin
 from flask_mail import Mail, Message
 from models import *
 from flask_migrate import Migrate
-import json
-import pdfkit
+
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -18,29 +17,37 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///getnet"
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'getnet107@gmail.com'  # введите свой адрес электронной почты здесь
-app.config['MAIL_DEFAULT_SENDER'] = 'getnet107@gmail.com'  # и здесь
-app.config['MAIL_PASSWORD'] = 'tonimo83'  # введите пароль
+app.config['MAIL_USERNAME'] = 'getnet107@gmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = 'getnet107@gmail.com'
+app.config['MAIL_PASSWORD'] = 'tonimo83'
 
-
-
-
+#GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", None)
+#GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
+#GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-
 CORS(app)
-
-
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-
 mail = Mail(app)
-
+#client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
 USER = []
 
+
+ser1 = Service(servise='Мобильный интернет', price=300, status='Отключена')
+ser2 = Service(servise='Интнернет на день', price=15, status='Отключена')
+ser3 = Service(servise='Телевидение', price=200, status='Отключена')
+ser4 = Service(servise='Антироуминг', price=10, status='Отключена')
+ser5 = Service(servise='Мобильный интернет', price=5, status='Отключена')
+db.session.add(ser5)
+db.session.commit()
+
+
+### не пофиксил, делал через Google oAuth -> ошибка redirect_uri_mismatch
+@login_manager.user_loader
+def getUser(id_user):
+    return UserLogin().initDB(id_user, User)
 
 @app.route("/Register", methods=["GET", "POST"])
 def register():
@@ -93,10 +100,7 @@ def login():
             response_object['message'] = "Неверные логин или пароль"
     return jsonify(response_object)
 
-### какая то лажа
-@login_manager.user_loader
-def getUser(id_user):
-    return UserLogin().initDB(id_user, User)
+
 
 @app.route('/user', methods=['GET'])
 #@login_required
@@ -178,8 +182,6 @@ def getServices():
         #User.query.filter_by(id=USER[0]['id']).update({"balance": USER[0]['balance']})
         if post_data.get('status') == 'Отключена':
             USER[0]['balance'] = USER[0]["balance"] - post_data.get("price")
-
-
             new_history = History(date=datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
                                   service=post_data.get("service"),
                                   price=post_data.get("price"),
@@ -228,4 +230,4 @@ def exitUser():
     return jsonify(response_object)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

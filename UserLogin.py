@@ -22,6 +22,5 @@ class UserLogin():
         return False
 
     def get_id(self):
-        print(self.user.id, 'id')
         return str(self.user.id)
 
